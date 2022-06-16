@@ -53,49 +53,52 @@ class _StringFeedbackState extends State<StringFeedback> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Stack(
-            children: [
-              ListView(
-                controller: widget.scrollController,
-                // Pad the top by 20 to match the corner radius if drag enabled.
-                padding: EdgeInsets.fromLTRB(
-                    16, widget.scrollController != null ? 20 : 16, 16, 0),
-                children: <Widget>[
-                  Text(
-                    FeedbackLocalizations.of(context).feedbackDescriptionText,
-                    maxLines: 2,
-                    style:
-                        FeedbackTheme.of(context).bottomSheetDescriptionStyle,
+    return Navigator(
+      onGenerateRoute: (settings) => MaterialPageRoute<void>(
+        builder: (_) => Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  ListView(
+                    controller: widget.scrollController,
+                    // Pad the top by 20 to match the corner radius if drag enabled.
+                    padding: EdgeInsets.fromLTRB(16, widget.scrollController != null ? 20 : 16, 16, 0),
+                    children: <Widget>[
+                      Text(
+                        FeedbackLocalizations.of(context).feedbackDescriptionText,
+                        maxLines: 2,
+                        style: FeedbackTheme.of(context).bottomSheetDescriptionStyle,
+                      ),
+                      DefaultTextEditingShortcuts(
+                        child: TextField(
+                          key: const Key('text_input_field'),
+                          maxLines: 2,
+                          minLines: 2,
+                          controller: controller,
+                          textInputAction: TextInputAction.done,
+                          onChanged: (_) {
+                            //print(_);
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  TextField(
-                    key: const Key('text_input_field'),
-                    maxLines: 2,
-                    minLines: 2,
-                    controller: controller,
-                    textInputAction: TextInputAction.done,
-                    onChanged: (_) {
-                      //print(_);
-                    },
-                  ),
+                  if (widget.scrollController != null) const FeedbackSheetDragHandle(),
                 ],
               ),
-              if (widget.scrollController != null)
-                const FeedbackSheetDragHandle(),
-            ],
-          ),
+            ),
+            TextButton(
+              key: const Key('submit_feedback_button'),
+              child: Text(
+                FeedbackLocalizations.of(context).submitButtonText,
+              ),
+              onPressed: () => widget.onSubmit(controller.text),
+            ),
+            const SizedBox(height: 8),
+          ],
         ),
-        TextButton(
-          key: const Key('submit_feedback_button'),
-          child: Text(
-            FeedbackLocalizations.of(context).submitButtonText,
-          ),
-          onPressed: () => widget.onSubmit(controller.text),
-        ),
-        const SizedBox(height: 8),
-      ],
+      ),
     );
   }
 }
